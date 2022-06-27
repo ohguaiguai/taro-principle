@@ -70,6 +70,7 @@ async function init() {
 }
 
 async function main() {
+  debugger;
   // 检查目录等准备工作
   await init();
   // npm拷贝到输出目录

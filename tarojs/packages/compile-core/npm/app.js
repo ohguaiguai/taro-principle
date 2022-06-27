@@ -13,7 +13,8 @@ export class Component {
 function update($component, state = {}) {
   $component.state = Object.assign($component.state, state);
   let data = $component.createData(state);
-  data["$taroCompReady"] = true;
+  // 对应componentDidMount声明周期
+  data['$taroCompReady'] = true;
   $component.state = data;
   $component.$scope.setData(data);
 }
@@ -29,13 +30,13 @@ export function createPage(ComponentClass) {
       update(this.$component, this.$component.state);
     },
     onReady() {
-      if (typeof this.$component.componentDidMount === "function") {
+      if (typeof this.$component.componentDidMount === 'function') {
         this.$component.componentDidMount();
       }
-    },
+    }
   };
 
-  const events = ComponentClass["$$events"];
+  const events = ComponentClass['$$events'];
   if (events) {
     events.forEach((eventHandlerName) => {
       if (option[eventHandlerName]) return;

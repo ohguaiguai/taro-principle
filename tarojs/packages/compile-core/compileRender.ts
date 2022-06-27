@@ -1,7 +1,7 @@
-import * as t from "@babel/types";
-import template from "@babel/template";
-import generator from "@babel/generator";
-import { buildBlockElement, findMethodName } from "../common/utils";
+import * as t from '@babel/types';
+import template from '@babel/template';
+import generator from '@babel/generator';
+import { buildBlockElement, findMethodName } from '../common/utils';
 
 let usedEvents = new Set<string>();
 
@@ -19,7 +19,7 @@ function stringifyAttributes(input) {
       continue;
     }
     if (Array.isArray(value)) {
-      value = value.join(" ");
+      value = value.join(' ');
     }
     let attribute = key;
     if (value !== true) {
@@ -27,16 +27,16 @@ function stringifyAttributes(input) {
     }
     attributes.push(attribute);
   }
-  return attributes.length > 0 ? " " + attributes.join(" ") : "";
+  return attributes.length > 0 ? ' ' + attributes.join(' ') : '';
 }
 
 function createWXMLLElement(options) {
   // 空div默认配置合并
   options = Object.assign(
     {
-      name: "div",
+      name: 'div',
       attributes: {},
-      value: "",
+      value: ''
     },
     options
   );
@@ -55,9 +55,9 @@ function createWXMLLElement(options) {
 function generateJSXAttr(ast) {
   const code = generator(ast).code;
   return code
-    .replace(/(this\.props\.)|(this\.state\.)/g, "")
-    .replace(/(props\.)|(state\.)/g, "")
-    .replace(/this\./g, "");
+    .replace(/(this\.props\.)|(this\.state\.)/g, '')
+    .replace(/(props\.)|(state\.)/g, '')
+    .replace(/this\./g, '');
 }
 
 function parseJSXChildren(children) {
@@ -67,16 +67,16 @@ function parseJSXChildren(children) {
       const strings = [];
       child.value.split(/(\r?\n\s*)/).forEach((val) => {
         // 空格替换
-        const value = val.replace(/\u00a0/g, "&nbsp;");
+        const value = val.replace(/\u00a0/g, '&nbsp;');
         if (!value) {
           return;
         }
-        if (value.startsWith("\n")) {
+        if (value.startsWith('\n')) {
           return;
         }
         strings.push(value);
       });
-      return str + strings.join("");
+      return str + strings.join('');
     }
     // jsx元素
     if (t.isJSXElement(child)) {
@@ -90,7 +90,7 @@ function parseJSXChildren(children) {
       return str + `{${generateJSXAttr(child)}}`;
     }
     return str;
-  }, "");
+  }, '');
 }
 
 function parseJSXElement(element) {
@@ -103,21 +103,21 @@ function parseJSXElement(element) {
   if (attributes.length) {
     attributesTrans = attributes.reduce((obj, attr) => {
       let name = attr.name.name;
-      let value = "";
+      let value = '';
       let attrValue = attr.value;
-      if (typeof name === "string") {
+      if (typeof name === 'string') {
         if (t.isStringLiteral(attrValue)) {
           value = attrValue.value;
         } else if (t.isJSXExpressionContainer(attrValue)) {
           // 查找替换过的onclick事件
-          let isBindEvent = name.startsWith("bind") && name !== "bind";
+          let isBindEvent = name.startsWith('bind') && name !== 'bind';
           let code = generator(attrValue.expression, {
-            quotes: "single",
-            concise: true,
+            quotes: 'single',
+            concise: true
           })
             .code.replace(/"/g, "'")
-            .replace(/(this\.props\.)|(this\.state\.)/g, "")
-            .replace(/this\./g, "");
+            .replace(/(this\.props\.)|(this\.state\.)/g, '')
+            .replace(/this\./g, '');
           // 如果是事件则函数名，否则是绑定值
           value = isBindEvent ? code : `{{${code}}}`;
         }
@@ -129,7 +129,7 @@ function parseJSXElement(element) {
   let eLe = createWXMLLElement({
     name: componentName,
     attributes: attributesTrans,
-    value: parseJSXChildren(children), //解析子节点
+    value: parseJSXChildren(children) //解析子节点
   });
   return eLe;
 }
@@ -139,7 +139,7 @@ function setCustomEvent(renderPath) {
     (p) => p.isClassExpression() || p.isClassDeclaration()
   );
   // 给类组件增加event属性
-  const eventPropName = "$$events";
+  const eventPropName = '$$events';
   const _usedEvents = Array.from(usedEvents).map((s) => t.stringLiteral(s));
   // 变成数组array插入
   let classProp = t.classProperty(
@@ -160,17 +160,17 @@ export function compileRender(renderPath) {
       const node = path.node;
       const value = path.node.value;
       const attributeName = node.name.name;
-      if (attributeName === "className") {
+      if (attributeName === 'className') {
         // classname转为class
-        path.node.name.name = "class";
+        path.node.name.name = 'class';
       }
-      if (attributeName === "onClick" && t.isJSXExpressionContainer(value)) {
+      if (attributeName === 'onClick' && t.isJSXExpressionContainer(value)) {
         // 查找方法名 修改onclick为bindtap
         const methodName = findMethodName(path.node.value.expression);
         methodName && usedEvents.add(methodName);
-        path.node.name.name = "bindtap";
+        path.node.name.name = 'bindtap';
       }
-    },
+    }
   });
   renderPath.traverse({
     JSXElement(path) {
@@ -178,9 +178,9 @@ export function compileRender(renderPath) {
         // 创建该组件外层的block，用于适时触发didmount
         const block = buildBlockElement([
           t.jSXAttribute(
-            t.jSXIdentifier("wx:if"),
-            t.jSXExpressionContainer(t.identifier("$taroCompReady"))
-          ),
+            t.jSXIdentifier('wx:if'),
+            t.jSXExpressionContainer(t.identifier('$taroCompReady'))
+          )
         ]);
         finalReturnElement = block;
         // 把原先的节点变为其子节点
@@ -189,9 +189,19 @@ export function compileRender(renderPath) {
         outputTemplate = parseJSXElement(block);
         path.replaceWith(block);
       }
-    },
+    }
   });
 
+  /*
+  createData() {
+    this.__state = arguments[0];
+    const text = this.state.count % 2 === 0 ? '偶数' : '奇数';
+    Object.assign(this.__state, {
+      text: text
+    });
+    return this.__state;
+  }
+  */
   renderPath.traverse({
     BlockStatement(path) {
       // 查找定义的变量
@@ -214,7 +224,7 @@ export function compileRender(renderPath) {
       // 让最后一句合并state
       path.node.body[path.node.body.length - 1] = template(`
         Object.assign(this.__state, {
-          ${vars.map((i) => `${i}: ${i},`).join(",")}
+          ${vars.map((i) => `${i}: ${i},`).join(',')}
         });
       `)();
       //最后插入返回
@@ -223,7 +233,7 @@ export function compileRender(renderPath) {
         return this.__state
       `)()
       );
-    },
+    }
   });
 
   setCustomEvent(renderPath);

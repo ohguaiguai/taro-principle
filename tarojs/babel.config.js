@@ -1,14 +1,15 @@
 module.exports = {
   presets: [
     [
-      "@babel/preset-env",
+      '@babel/preset-env',
       {
         targets: {
-          node: "8.0.0",
-        },
-      },
+          node: '8.0.0'
+        }
+      }
     ],
-    "@babel/typescript",
-    "@babel/preset-react",
+    '@babel/typescript',
+    '@babel/preset-react'
   ],
+  sourceMaps: 'inline'
 };
