@@ -1,0 +1,17 @@
+.container {
+  padding: 100px;
+  text-align: center;
+}
+.conut {
+  color: #333;
+  font-size: 60px;
+}
+.text {
+  font-size: 30px;
+  margin-left: 10px;
+  color: coral;
+}
+.btn {
+  display: inline-block;
+  margin: 30px 20px;
+}

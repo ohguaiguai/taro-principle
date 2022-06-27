@@ -1,0 +1,32 @@
+{
+  "name": "taro-camp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "runtime": "npm run build && node ./lib/runtime-core/index",
+    "compile": "npm run build && node ./lib/compile-core/index",
+    "build": "rimraf lib && babel packages --out-dir lib --extensions \".js,.ts,.tsx\"",
+    "format": "npx prettier --write '../project/'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-react": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@babel/traverse": "^7.16.3",
+    "@babel/types": "^7.16.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^16.11.11",
+    "babel-plugin-minify-replace": "^0.5.0",
+    "cross-env": "^7.0.3",
+    "fs-extra": "^10.0.0",
+    "react": "^17.0.2",
+    "react-reconciler": "^0.26.2",
+    "rimraf": "^3.0.2"
+  }
+}
